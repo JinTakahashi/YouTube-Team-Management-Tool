@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン & 新規登録</title>
+</head>
+<body>
+  <h1>ログイン</h1>
+  <form id="loginForm">
+    <label for="loginEmail">メールアドレス:</label>
+    <input type="email" id="loginEmail" required><br>
+
+    <label for="loginPassword">パスワード:</label>
+    <input type="password" id="loginPassword" required><br>
+
+    <button type="submit">ログイン</button>
+  </form>
+
+  <h2>ログイン結果:</h2>
+  <div id="loginResult"></div>
+
+  <hr>
+
+  <h1>ユーザー登録</h1>
+  <form id="signupForm">
+    <label for="name">名前:</label>
+    <input type="text" id="name" required><br>
+
+    <label for="mail">メールアドレス:</label>
+    <input type="email" id="mail" required><br>
+
+    <label for="password">パスワード:</label>
+    <input type="password" id="password" required><br>
+
+    <label for="channel">担当チャンネル:</label>
+    <input type="text" id="channel" required><br>
+
+    <label for="role">役割:</label>
+    <input type="text" id="role" required><br>
+
+    <button type="submit">登録</button>
+  </form>
+
+  <h2>登録結果:</h2>
+  <div id="signupResult"></div>
+
+  <script>
+    const apiBase = "http://127.0.0.1:8000";
+
+    // ログイン処理
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      const formData = new URLSearchParams();
+      formData.append("username", email);  // FastAPIはOAuth2の仕様で"username"キーを使う
+      formData.append("password", password);
+
+      try {
+        const response = await fetch(`${apiBase}/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById("loginResult").innerText = "ログイン成功！トークン: " + data.access_token;
+          localStorage.setItem("token", data.access_token);
+        } else {
+          document.getElementById("loginResult").innerText = "ログイン失敗: " + data.detail;
+        }
+      } catch (err) {
+        document.getElementById("loginResult").innerText = "通信エラー";
+        console.error(err);
+      }
+    });
+
+    // 新規登録処理
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        name: document.getElementById("name").value,
+        mail_address: document.getElementById("mail").value,
+        password: document.getElementById("password").value,
+        channel: document.getElementById("channel").value,
+        role: document.getElementById("role").value,
+      };
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        alert(data.message || "登録完了");
+      } catch (err) {
+        console.error("登録エラー:", err);
+        alert("登録に失敗しました");
+      }
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,89 @@
+<form id="taskForm">
+    <label>タイトル:</label>
+    <input type="text" id="title" required><br>
+  
+    <label>担当者ID:</label>
+    <input type="number" id="assignee_id" required><br>
+  
+    <label>ステータス:</label>
+    <input type="text" id="status" required><br>
+  
+    <label>リマインダー:</label>
+    <input type="text" id="reminder"><br>
+  
+    <label>メモ:</label>
+    <input type="text" id="note"><br>
+  
+    <label>チャネル:</label>
+    <input type="text" id="channel"><br>
+  
+    <label>納期:</label>
+    <input type="datetime-local" id="deadline"><br>
+  
+    <button type="submit">タスク登録</button>
+  </form>
+
+  <h2>登録されたタスク一覧</h2>
+<div id="taskList">読み込み中...</div>
+
+
+  
+  <script>
+  document.getElementById("taskForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+  
+    const payload = {
+      title: document.getElementById("title").value,
+      assignee_id: parseInt(document.getElementById("assignee_id").value),
+      status: document.getElementById("status").value,
+      reminder: document.getElementById("reminder").value || null,
+      note: document.getElementById("note").value || null,
+      channel: document.getElementById("channel").value || null,
+      deadline: document.getElementById("deadline").value || null
+    };
+  
+    const res = await fetch("http://127.0.0.1:8000/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  
+    const data = await res.json();
+    alert(data.message);
+  });
+
+  async function fetchTasks() {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/tasks");
+      const data = await response.json();
+      const taskListDiv = document.getElementById("taskList");
+      taskListDiv.innerHTML = "";
+
+      if (data.tasks.length === 0) {
+        taskListDiv.innerHTML = "登録されたタスクはありません";
+        return;
+      }
+
+      data.tasks.forEach(task => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <strong>${task.title}</strong><br>
+          担当者ID: ${task.assignee_id}<br>
+          ステータス: ${task.status}<br>
+          リマインダー: ${task.reminder ?? "なし"}<br>
+          メモ: ${task.note ?? "なし"}<br>
+          チャンネル: ${task.channel ?? "未設定"}<br>
+          納期: ${task.deadline ?? "未設定"}<hr>
+        `;
+        taskListDiv.appendChild(div);
+      });
+    } catch (error) {
+      console.error("タスク取得エラー:", error);
+      document.getElementById("taskList").innerHTML = "取得エラーが発生しました";
+    }
+  }
+
+  // ページロード時に取得
+  fetchTasks();
+  </script>
+  
