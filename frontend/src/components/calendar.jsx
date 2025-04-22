@@ -32,17 +32,17 @@ import { useAuth } from "../context/AuthContext"
 
 
 
-APIのベースURL
+// APIのベースURL
 const BASE_URL = "http://localhost:8000";
 
-メールアドレスから担当者IDを返す簡易マッピング関数
+// メールアドレスから担当者IDを返す簡易マッピング関数
 function getAssigneeId(email) {
   if (email === "admin@example.com") return 1;
   if (email === "editor@example.com") return 2;
   return 1; // デフォルト
 }
 
-選択された日付と時刻（例："午後 5:00"）を組み合わせてISO形式に変換する関数
+// 選択された日付と時刻（例："午後 5:00"）を組み合わせてISO形式に変換する関数
 function combineDateTime(selectedDate, eventTime) {
   let hour = 0, minute = 0;
   const timeMatch = eventTime.match(/(午前|午後)\s*(\d+):(\d+)/);
@@ -61,7 +61,7 @@ function combineDateTime(selectedDate, eventTime) {
   return date.toISOString();
 }
 
-バックエンドから取得したタスク情報を、カレンダー表示用のイベント形式に変換する関数
+// バックエンドから取得したタスク情報を、カレンダー表示用のイベント形式に変換する関数
 function convertTaskToEvent(task) {
   if (!task.deadline) return null;
   const d = new Date(task.deadline);
