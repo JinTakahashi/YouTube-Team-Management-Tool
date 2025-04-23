@@ -140,6 +140,7 @@ export function Calendar() {
   // イベントの状態管理
   const [events, setEvents] = useState([]);
 
+  // サーバーからタスクを取得し、カレンダーに表示する処理
   async function fetchTasks() {
     try {
       const res = await fetch(`${BASE_URL}/tasks`);
