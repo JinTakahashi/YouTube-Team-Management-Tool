@@ -155,6 +155,7 @@ export function Calendar() {
     }
   }
 
+  // 新しいタスクをサーバーに送信して登録する処理
   async function createTask(payload) {
     try {
       const res = await fetch(`${BASE_URL}/tasks`, {
@@ -165,7 +166,6 @@ export function Calendar() {
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error("タスクの作成に失敗しました");
-      await res.json();
     } catch (error) {
       console.error(error);
     }
