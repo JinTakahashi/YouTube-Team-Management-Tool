@@ -170,7 +170,8 @@ export function Calendar() {
       console.error(error);
     }
   }
-
+  
+// 初回マウント時だけfetchTasks関数を実行
   useEffect(() => {
     fetchTasks();
   }, []);
